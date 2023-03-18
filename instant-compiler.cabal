@@ -25,6 +25,27 @@ common common-settings
   ghc-options:
     -Wall
 
+test-suite instant-test
+  import: common-settings
+  type: exitcode-stdio-1.0
+  hs-source-dirs: test
+  main-is: Spec.hs
+
+  other-modules:
+      ParserSpec
+  build-depends:
+      base
+    , hspec
+    , hspec-discover
+    , megaparsec
+    , text
+    , instant-compiler
+
+  ghc-options:
+    -O -threaded -rtsopts -with-rtsopts=-N
+  build-tool-depends:
+    hspec-discover:hspec-discover
+
 library
   import: common-settings
   hs-source-dirs: src
@@ -35,7 +56,6 @@ library
     , text
   exposed-modules:
     Parser
-
 
 executable instant-compiler
   import: common-settings
