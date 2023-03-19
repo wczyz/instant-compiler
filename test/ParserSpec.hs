@@ -8,6 +8,7 @@ import Data.Void
 import Parser
 import Test.Hspec
 import Text.Megaparsec
+import Types
 
 run :: T.Text -> Either (ParseErrorBundle T.Text Void) Program
 run = parse pProg ""
@@ -25,7 +26,7 @@ expressions =
       it "simple expression statement" $
         shouldBe
           (run " 14 + 5 * 2")
-          ( Right
+          ( Right $ Program
               [ SExp
                   ( EBinOp
                       Add
@@ -37,7 +38,7 @@ expressions =
       it "division" $
         shouldBe
           (run "1/0")
-          ( Right
+          ( Right $ Program
               [ SExp
                   ( EBinOp
                       Div
@@ -49,7 +50,7 @@ expressions =
       it "expression statement with parens" $
         shouldBe
           (run "(b * b - 4 * a * c) / 2")
-          ( Right
+          ( Right $ Program
               [ SExp
                   ( EBinOp
                       Div
@@ -69,7 +70,7 @@ expressions =
       it "expression statement with whitespaces" $
         shouldBe
           (run "  \n\n\n5;           33   -     4  * 2         ")
-          ( Right
+          ( Right $ Program
               [ SExp (ELit 5),
                 SExp
                   ( EBinOp
@@ -92,7 +93,7 @@ assignments =
       it "simple assignment statement" $
         shouldBe
           (run "a = 14 + 5 * 2")
-          ( Right
+          ( Right $ Program
               [ SAss
                   "a"
                   ( EBinOp
@@ -105,7 +106,7 @@ assignments =
       it "division" $
         shouldBe
           (run "impossible = 1/0")
-          ( Right
+          ( Right $ Program
               [ SAss
                   "impossible"
                   ( EBinOp
@@ -118,7 +119,7 @@ assignments =
       it "assignment statement with parens" $
         shouldBe
           (run "a = ((b * b - 4 * a * c) / 2)")
-          ( Right
+          ( Right $ Program
               [ SAss "a"
                   ( EBinOp
                       Div
@@ -138,7 +139,7 @@ assignments =
       it "assignment statement with whitespaces" $
         shouldBe
           (run "\n x \n =  \n\n\n5;           33   -     4  * 2         ")
-          ( Right
+          ( Right $ Program
               [ SAss "x" (ELit 5),
                 SExp
                   ( EBinOp

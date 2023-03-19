@@ -55,6 +55,7 @@ library
     , parser-combinators
     , text
   exposed-modules:
+    Types
     Parser
 
 executable instant-compiler

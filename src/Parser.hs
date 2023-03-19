@@ -2,12 +2,6 @@
 
 module Parser
   ( pProg,
-    Program,
-    Stmt (..),
-    BinOp (..),
-    Expr (..),
-    Parser,
-    Assoc,
   )
 where
 
@@ -19,40 +13,14 @@ import Data.Void (Void)
 import Text.Megaparsec
 import Text.Megaparsec.Char
 import qualified Text.Megaparsec.Char.Lexer as L
-
--- Types
-
-type Program = [Stmt]
-
-data Stmt
-  = SAss String Expr
-  | SExp Expr
-  deriving (Eq, Show)
-
-data BinOp
-  = Add
-  | Sub
-  | Mul
-  | Div
-  deriving (Eq, Show)
-
-data Expr
-  = EBinOp BinOp Expr Expr
-  | ELit Integer
-  | EVar String
-  deriving (Eq, Show)
+import Types
 
 type Parser = Parsec Void T.Text
 
-data Assoc
-  = AssocLeft
-  | AssocRight
-
--- Parsers
-
 pProg :: Parser Program
 pProg =
-  (pStmt `sepBy` some (symbol ";"))
+  Program
+    <$> (pStmt `sepBy` some (symbol ";"))
     <* eof
 
 pStmt :: Parser Stmt
@@ -80,7 +48,7 @@ pTerm =
 operatorTable :: [[Operator Parser Expr]]
 operatorTable =
   [ [binary "*" (EBinOp Mul) AssocLeft, binary "/" (EBinOp Div) AssocLeft],
-    [binary "+" (EBinOp Add) AssocRight, binary "-" (EBinOp Sub) AssocLeft]
+    [binary "+" (EBinOp Add) AssocRight, binary "-" (EBinOp Sub) AssocRight]
   ]
 
 binary :: T.Text -> (Expr -> Expr -> Expr) -> Assoc -> Operator Parser Expr
