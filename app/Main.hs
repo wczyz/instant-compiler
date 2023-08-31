@@ -3,7 +3,8 @@
 module Main where
 
 import qualified Data.Text.IO as TIO
-import Parser (pProg)
+import LLVM
+import Parser
 import System.Environment (getArgs)
 import Text.Megaparsec (errorBundlePretty, parse)
 
@@ -20,5 +21,5 @@ main = do
   let program = parse pProg "" input
 
   case program of
-    (Right v) -> print v
+    (Right v) -> TIO.writeFile "x.bc" $ generateProgram v
     (Left e) -> putStrLn $ errorBundlePretty e

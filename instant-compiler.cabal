@@ -37,6 +37,7 @@ test-suite instant-test
       base
     , hspec
     , hspec-discover
+    , hspec-megaparsec
     , megaparsec
     , text
     , instant-compiler
@@ -54,9 +55,12 @@ library
     , megaparsec
     , parser-combinators
     , text
+    , mtl
+    , containers
   exposed-modules:
     Types
     Parser
+    LLVM
 
 executable instant-compiler
   import: common-settings

@@ -69,7 +69,7 @@ pVariable :: Parser Expr
 pVariable = EVar <$> pIdent
 
 pLit :: Parser Expr
-pLit = ELit <$> L.signed space pInteger
+pLit = ELit <$> pInteger
   where
     pInteger :: Parser Integer
     pInteger = lexeme L.decimal
