@@ -1,9 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Parser
-  ( pProg,
-  )
-where
+module Parser (
+    pProg,
+) where
 
 import Control.Applicative hiding (many, some)
 import Control.Monad (void)
@@ -19,51 +18,54 @@ type Parser = Parsec Void T.Text
 
 pProg :: Parser Program
 pProg =
-  Program
-    <$> (pStmt `sepBy` some (symbol ";"))
-    <* eof
+    Program
+        <$> (pStmt `sepBy` some (symbol ";"))
+        <* eof
 
 pStmt :: Parser Stmt
 pStmt =
-  space
-    *> (try pAss <|> SExp <$> pExpr)
+    space
+        *> (try pAss <|> pExp)
   where
     pAss :: Parser Stmt
     pAss = do
-      name <- pIdent
-      void $ symbol "="
-      SAss name <$> pExpr
+        name <- pIdent
+        void $ symbol "="
+        SAss name <$> pExpr
+
+    pExp :: Parser Stmt
+    pExp = SExp <$> pExpr
 
 pExpr :: Parser Expr
 pExpr = makeExprParser pTerm operatorTable
 
 pTerm :: Parser Expr
 pTerm =
-  choice
-    [ parens pExpr,
-      pLit,
-      pVariable
-    ]
+    choice
+        [ parens pExpr
+        , pLit
+        , pVariable
+        ]
 
 operatorTable :: [[Operator Parser Expr]]
 operatorTable =
-  [ [binary "*" (EBinOp Mul) AssocLeft, binary "/" (EBinOp Div) AssocLeft],
-    [binary "+" (EBinOp Add) AssocRight, binary "-" (EBinOp Sub) AssocRight]
-  ]
+    [ [binary "*" (EBinOp Mul) AssocLeft, binary "/" (EBinOp Div) AssocLeft]
+    , [binary "+" (EBinOp Add) AssocRight, binary "-" (EBinOp Sub) AssocRight]
+    ]
 
 binary :: T.Text -> (Expr -> Expr -> Expr) -> Assoc -> Operator Parser Expr
 binary name f assoc = constructor (f <$ symbol name)
   where
     constructor =
-      case assoc of
-        AssocLeft -> InfixL
-        AssocRight -> InfixR
+        case assoc of
+            AssocLeft -> InfixL
+            AssocRight -> InfixR
 
 pIdent :: Parser String
 pIdent = lexeme $ do
-  firstChar <- letterChar
-  rest <- many alphaNumChar
-  return $ firstChar : rest
+    firstChar <- letterChar
+    rest <- many alphaNumChar
+    return $ firstChar : rest
 
 pVariable :: Parser Expr
 pVariable = EVar <$> pIdent
