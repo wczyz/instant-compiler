@@ -7,9 +7,13 @@ import LLVM
 import Parser
 import System.Environment (getArgs)
 import Text.Megaparsec (errorBundlePretty, parse)
+import Runner
 
 main :: IO ()
 main = do
+    inputData <- prepareAST
+
+    
     args <- getArgs
 
     -- read from file if specified

@@ -61,6 +61,7 @@ library
     Types
     Parser
     LLVM
+    Runner
 
 executable instant-compiler
   import: common-settings
@@ -76,4 +77,4 @@ executable instant-compiler
     , megaparsec
     , instant-compiler
     , text
-  hs-source-dirs: app
+  hs-source-dirs: llvm
